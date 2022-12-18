@@ -1,8 +1,7 @@
 <template>
-    <div class="d-flex justify-content-center align-items-center flex-column container-login">
-    <h3>Login</h3>
-    <div class="card" style="max-width: 30rem;">
-        <div class="card-header">
+    <div class="container gap-3 d-flex justify-content-center align-items-center flex-column container-login">
+    <div class="card p-2" style="min-width: 30rem;">
+        <div class="card-header d-flex justify-content-center">
         Iniciar sesion
         </div>
         <div class="card-body">
@@ -17,9 +16,11 @@
                     <input v-model="password" placeholder="Ingresa tu contraseña" type="password" class="form-control" id="loginContrasena">
                     <p v-if="errors.password" class="card-text"><small class="text-danger c">{{errors.password}}</small></p>
                 </div>
-                <div class="d-flex justify-content-between">
-                    <div><span>Aun no tenes una cuenta?</span><button type="button" class="btn btn-link">Registrarte</button></div>
-                    <button type="submit" class="btn btn-primary">Ingresar</button>
+                <div class="d-flex justify-content-start">
+                    <div><span>Aun no tenes una cuenta?</span><button @click="irARegistraro" type="button" class="btn btn-link">Registrarte</button></div>
+                </div>
+                <div class="d-flex justify-content-end">
+                <button id="liveToastBtn" type="submit" class="btn btn-primary">Ingresar</button>
                 </div>
             </form>
         </div>
@@ -28,10 +29,12 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     name: 'LoginComponent',
     data() {
         return {
+            toasts:[],
             email:'',
             password:'',
             errors:{
@@ -40,18 +43,42 @@ export default {
             }
         }
     },
-    methods:{
-        validarLogin(){
-            if(!this.email){
-                this.errors = {...this.errors, email:'Debes colocar un email para poder ingresar'} 
-            }else{
+    watch:{
+        email(nuevo){
+            if(nuevo && this.errors.email){
                 this.errors = {...this.errors, email:''} 
             }
-            if(!this.password){
-                this.errors = {...this.errors, password:'Debes colocar una contraseña para poder ingresar'} 
-            }else{
+        },
+        password(nuevo){
+            if(nuevo && this.errors.password){
                 this.errors = {...this.errors, password:''} 
             }
+        }
+    },
+    methods:{
+        validarLogin(){
+            console.log(this.toasts)
+            if(this.email && this.password){
+                const URLGET = 'https://639e6cf43542a261305b9ed0.mockapi.io/usuarios'
+                axios.get(URLGET).then((response)=>{
+                    console.log(response)
+                    const dataUser = response.data.find((user)=> user.email === this.email && user.password === this.password)
+                    if(dataUser){
+                        this.$router.push('/home')
+                    }
+                })
+            }
+
+            if(!this.email){
+                this.errors = {...this.errors, email:'Debes colocar un email para poder ingresar'} 
+            }
+
+            if(!this.password){
+                this.errors = {...this.errors, password:'Debes colocar una contraseña para poder ingresar'} 
+            }
+        },
+        irARegistraro(){
+            this.$router.push('/registro')
         }
     }
 }
@@ -59,7 +86,8 @@ export default {
 
 <style scope>
 .container-login{
-    margin-bottom: 24px;
-    padding: 15px;
+    padding: 60px 30px;
+    width: 100%;
+    height: 100vh;
 }
 </style>

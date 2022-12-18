@@ -1,5 +1,5 @@
 <template>
-    <div class="col">
+    <div class="col p-3">
         <div class="card">
             <img :src="producto.imagen" class="card-img-top imagen" alt="img">
             <p class="card-text"><small class="text-muted"><a :href="producto.autorLink">Imagen de rawpixel.com</a> en Freepik</small></p>
@@ -32,6 +32,6 @@ export default {
 
 <style>
 .imagen{
-    max-height: 80vh;
+    max-height: 60vh;
 }
 </style>

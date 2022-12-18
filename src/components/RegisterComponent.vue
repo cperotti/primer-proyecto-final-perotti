@@ -1,21 +1,20 @@
 <template>
-    <div class="container-register">
-    <h3>Registro</h3>
-    <div class="card" style="max-width: 30rem;">
-        <div class="card-header">
+    <div class="container gap-3 d-flex justify-content-center align-items-center flex-column container-login">
+    <div class="card p-2" style="min-width: 30rem;">
+        <div class="card-header d-flex justify-content-center">
         Registrarte
         </div>
         <div class="card-body">
             <form @submit.prevent="validarRegistro">
                 <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input v-model="nombre" placeholder="Ingresa tu nombre" type="text" class="form-control" id="nombre" aria-describedby="emailHelp">
-                    <p v-if="errorsRegistro.nombre" class="card-text"><small class="text-danger">{{errorsRegistro.nombre}}</small></p>
+                    <label for="firstName" class="form-label">Nombre</label>
+                    <input v-model="firstName" placeholder="Ingresa tu nombre" type="text" class="form-control" id="firstName" aria-describedby="emailHelp">
+                    <p v-if="errorsRegistro.firstName" class="card-text"><small class="text-danger">{{errorsRegistro.firstName}}</small></p>
                 </div>
                 <div class="mb-3">
-                    <label for="apellido" class="form-label">Apellido</label>
-                    <input v-model="apellido" placeholder="Ingresa tu apellido" type="text" class="form-control" id="apellido">
-                    <p v-if="errorsRegistro.apellido" class="card-text"><small class="text-danger">{{errorsRegistro.apellido}}</small></p>
+                    <label for="lastName" class="form-label">Apellido</label>
+                    <input v-model="lastName" placeholder="Ingresa tu apellido" type="text" class="form-control" id="lastName">
+                    <p v-if="errorsRegistro.lastName" class="card-text"><small class="text-danger">{{errorsRegistro.lastName}}</small></p>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
@@ -32,6 +31,10 @@
                     <input v-model="passwordRepeat" placeholder="Ingresa nuevamente la contraseña" type="password" class="form-control" id="repetirContrasena">
                     <p v-if="errorsRegistro.passwordRepeat" class="card-text"><small class="text-danger">{{errorsRegistro.passwordRepeat}}</small></p>
                 </div>
+                <div class="mb-3">
+                    <input v-model="isAdmin" class="form-check-input" type="checkbox" id="admin" value="">
+                    <label for="admin" class="form-check-label">Administrador</label>
+                </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary">Registrarte</button>
                 </div>
@@ -42,69 +45,100 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     name: 'RegisterComponents',
     data() {
         return {
-            nombre:'',
-            apellido:'',
+            firstName:'',
+            lastName:'',
             email:'',
             password:'',
             passwordRepeat:'',
+            isAdmin:false,
             errorsRegistro:{
-                nombre:'',
-                apellido:'',
+                firstName:'',
+                lastName:'',
                 email:'',
                 password:'',
                 passwordRepeat:''
             }
         }
     },
+    watch:{
+        firstName(nuevo){
+            if(nuevo && this.errorsRegistro.firstName){
+                this.errorsRegistro = {...this.errorsRegistro, firstName:''} 
+            }
+        },
+        lastName(nuevo){
+            if(nuevo && this.errorsRegistro.lastName){
+                this.errorsRegistro = {...this.errorsRegistro, lastName:''} 
+            }
+        },
+        email(nuevo){
+            if(nuevo && this.errorsRegistro.email){
+                this.errorsRegistro = {...this.errorsRegistro, email:''} 
+            }
+        },
+        password(nuevo){
+            if(nuevo && this.errorsRegistro.password){
+                this.errorsRegistro = {...this.errorsRegistro, password:''} 
+            }
+        },
+        passwordRepeat(nuevo){
+            if(nuevo && this.errorsRegistro.passwordRepeat){
+                if(this.password !== nuevo){
+                    this.errorsRegistro = {...this.errorsRegistro, passwordRepeat:'La contraseña no coincide con la que ingresaste'}
+                }else{
+                    this.errorsRegistro = {...this.errorsRegistro, passwordRepeat:''} 
+                }
+
+            }
+        }
+    },
     methods:{
         validarRegistro(){
-            if(!this.nombre){
-                this.errorsRegistro = {...this.errorsRegistro, nombre:'Debes colocar tu nombre para poder registrarte'} 
-            }else{
-                this.errorsRegistro = {...this.errorsRegistro, nombre:''} 
+
+            if(this.firstName && this.lastName && this.email && this.password && this.passwordRepeat){
+                const URLPOST = 'https://639e6cf43542a261305b9ed0.mockapi.io/usuarios'
+                axios.post(URLPOST,{
+                    firstName: this.firstName,
+                    lastName: this.lastName,
+                    email: this.email,
+                    password: this.password,
+                    isAdmin: this.isAdmin,
+                }).then(()=> this.$router.push('/'))
+                .catch((error)=> console.log(error))
             }
 
-            if(!this.apellido){
-                this.errorsRegistro = {...this.errorsRegistro, apellido:'Debes colocar tu apellido para poder registrarte'} 
-            }else{
-                this.errorsRegistro = {...this.errorsRegistro, apellido:''} 
+            if(!this.firstName){
+                this.errorsRegistro = {...this.errorsRegistro, firstName:'Debes colocar tu nombre para poder registrarte'} 
+            }
+
+            if(!this.lastName){
+                this.errorsRegistro = {...this.errorsRegistro, lastName:'Debes colocar tu apellido para poder registrarte'} 
             }
 
             if(!this.email){
                 this.errorsRegistro = {...this.errorsRegistro, email:'Debes colocar un email para poder registrarte'} 
-            }else{
-                this.errorsRegistro = {...this.errorsRegistro, email:''} 
             }
 
             if(!this.password){
                 this.errorsRegistro = {...this.errorsRegistro, password:'Debes colocar una contraseña para poder registrarte'} 
-            }else{
-                this.errorsRegistro = {...this.errorsRegistro, password:''} 
             }
 
             if(!this.passwordRepeat){
                 this.errorsRegistro = {...this.errorsRegistro, passwordRepeat:'Debes repetir tu contraseña para poder registrarte'} 
-            }else{
-                this.errorsRegistro = {...this.errorsRegistro, passwordRepeat:''} 
             }
 
             if(this.password !== this.passwordRepeat){
                 this.errorsRegistro = {...this.errorsRegistro, passwordRepeat:'La contraseña no coincide con la que ingresaste'} 
-            }else{
-                this.errorsRegistro = {...this.errorsRegistro, passwordRepeat:''} 
             }
-        }
-    }
+        },
+    },
 }
 </script>
 
 <style scope>
-    .container-register{
-        margin-bottom: 24px;
-        padding: 15px;
-    }
 </style>

@@ -1,6 +1,5 @@
 <template>
-    <div class="container-list">
-        <h3>Listado de productos</h3>
+    <div>
         <div class="row">
             <card-component v-for="(producto) in productos" :key="producto.id" :producto="producto" />
         </div>
@@ -50,8 +49,4 @@ export default {
 </script>
 
 <style scope>
-.container-list{
-    margin-bottom: 24px;
-    padding: 15px;
-}
 </style>
